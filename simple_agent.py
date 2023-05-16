@@ -29,21 +29,21 @@ def check_mustwin(round, env, player):
 
 def get_action1(prob=0.6):
     if np.random.random()<prob:
-        return math.floor(np.random.random()*3+2)
+        return abs(int(np.random.normal(4,2)))
     else:
-        return math.floor(np.random.random()*4+17)
+        return abs(int(np.random.normal(21,5)))
 
 def get_action2(env, player, prob=0.3):
     if env.points[player]>95:
         if np.random.random()<prob:
-            action =  math.floor(np.random.random() * 3 + 2)
+            action =  abs(int(np.random.normal(3,2)))
         else:
-            action = math.floor(np.random.random()*4+20)
+            action = abs(int(np.random.normal(22,8)))
     else:
         if env.scores[1-player]==1:
-            action = math.floor(np.random.random()*3+3)
+            action = abs(int(np.random.normal(5,3)))
         else:
-            action = math.floor(np.random.random() * 5 + 6)
+            action = abs(int(np.random.normal(9,6)))
     must_win, must_win_strat = check_mustwin(1, env, player)
     if must_win:
         action = must_win_strat
@@ -52,19 +52,19 @@ def get_action2(env, player, prob=0.3):
     return action
 
 
-def get_action3(env, player, prob1=0.5, prob2=0.5):
+def get_action3(env, player, prob1=0.85, prob2=0.5):
     if env.scores[player]==2:
         if np.random.random() < prob1:
-            action = math.floor(np.random.random() * 5 + 4)
+            action = abs(int(np.random.normal(8,4)))
         else:
-            action = math.floor(np.random.random() * 2)
+            action = abs(int(np.random.normal(20,5)))
     elif env.scores[player]==1:
         if np.random.random() < prob2:
-            action = math.floor(np.random.random() * 3 + 2)
+            action = abs(int(np.random.normal(3,2)))
         else:
-            action = math.floor(np.random.random() * 6 + 17)
+            action = abs(int(np.random.normal(20,8)))
     else:
-        action = math.floor(np.random.random() * 5 + 18)
+        action = abs(int(np.random.normal(21,6)))
     must_win, must_win_strat = check_mustwin(2, env, player)
     if must_win:
         action = must_win_strat
@@ -74,17 +74,17 @@ def get_action3(env, player, prob1=0.5, prob2=0.5):
 
 def get_action4(env,player, prob1=0.3, prob2=0.7):
     if env.scores[player]==3:
-        action =  math.floor(np.random.random() * 3 + 3)
+        action =  abs(int(np.random.normal(5,3)))
     elif env.scores[player]==2:
         if np.random.random() < prob1:
-            action = math.floor(np.random.random() * 2 + 2)
+            action = abs(int(np.random.normal(2,1)))
         else:
-            action = math.floor(np.random.random() * 6 + 20)
+            action = abs(int(np.random.normal(23,8)))
     elif env.scores[player]==1:
         if np.random.random() < prob2:
-            action = math.floor(np.random.random() * 5 + 8)
+            action = abs(int(np.random.normal(10,3)))
         else:
-            action = math.floor(np.random.random() * 6 + 20)
+            action = abs(int(np.random.normal(23,6)))
     else:
         action = env.points[1-player]+1
     must_win, must_win_strat = check_mustwin(3, env, player)
@@ -101,17 +101,17 @@ def get_action5(env, player, prob1_1=0.1, prob1_2=0.7, prob2=0.3):
         if rd < prob1_1:
             action = env.points[player]
         elif rd < prob1_2:
-            action =  math.floor(np.random.random() * 2)
+            action =  abs(int(np.random.normal(2,1)))
         else:
-            action = math.floor(np.random.random() * 3+8)
+            action = abs(int(np.random.normal(10,5)))
     elif env.scores[player]==2:
         if env.points[1-player]*2 - env.points[player]<10:
-            action =  math.floor(np.random.random() * 3)
+            action =  abs(int(np.random.normal(2,1)))
         else:
-            action = math.floor(np.random.random() * 6 + 20)
+            action = abs(int(np.random.normal(23,8)))
     else:
         if np.random.random() < prob2:
-            action = math.floor(np.random.random() * 5 + 6)
+            action = abs(int(np.random.normal(9,4)))
         else:
             action = env.points[1 - player] + 1
     must_win, must_win_strat = check_mustwin(4, env, player)
@@ -127,10 +127,10 @@ def get_action6(env, player, prob1=0.5, prob2=0.2):
         if np.random.random() < prob1:
             action = math.floor(np.random.random() * 2 + env.points[player] - 5)
         else:
-            action = math.floor(np.random.random() * 3)
+            action = abs(int(np.random.normal(2,1)))
     else:
         if np.random.random() < prob2:
-            action = math.floor(np.random.random() * 3 + 4)
+            action = abs(int(np.random.normal(5,2)))
         else:
             action = env.points[1 - player] + 1
     must_win, must_win_strat = check_mustwin(5, env, player)
