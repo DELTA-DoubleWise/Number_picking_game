@@ -12,4 +12,5 @@ def plot_reward(episode_rewards):
     plt.ylabel("reward")
     plt.xlabel("episode")
     plt.title("training reward")
+    plt.savefig("training_reward.png")
     plt.show()

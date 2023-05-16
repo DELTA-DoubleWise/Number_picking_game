@@ -5,10 +5,12 @@ import numpy.typing as npt
 import simple_agent
 
 class QLearningAgent():
-    def __init__(self, env, params: Dict[str, Any]):
+    def __init__(self, env, params: Dict[str, Any], policy=None):
+        if policy is None:
+            policy = {}
         self.env = env
         self.params = params
-        self.policy = {}
+        self.policy = policy
 
         self.lr = self.params["learning_rate"]
         self.min_lr = self.params["min_learning_rate"]
@@ -68,7 +70,7 @@ class QLearningAgent():
                     print(state)
                 action = self.get_action(state, train)
                 if train:
-                    if np.random.random()<0.2:
+                    if np.random.random()<0.15:
                         op_action = np.random.randint(self.env.points[1]+1)
                     else:
                         op_action = simple_agent.game(self.env,1)
@@ -76,7 +78,9 @@ class QLearningAgent():
                     next_state, reward, done, winner = self.step([action, op_action])
                 else:
                     op_action = int(input("Please enter your choice: "))
+                    # op_action = simple_agent.game(self.env, 1)
                     next_state, reward, done, winner = self.step([action, op_action])
+                # print(f"({action},{op_action})")
 
                 if next_state not in self.policy:
                     self.policy[next_state] = {i: 0.0 for i in range(next_state[0] + 1)}
@@ -99,10 +103,11 @@ class QLearningAgent():
 
             episode_rewards.append(total_reward)
             total_rewards += total_reward
-            print(f"episode {ne}: {total_reward}")
+            if ne%1000==0:
+                print(f"episode {ne}: {total_reward}")
 
             self.eps = max(self.eps*self.eps_decay, self.min_eps)
             self.lr = max(self.lr*self.lr_decay, self.min_lr)
-        print("total rewards: ", total_rewards)
+        print("average rewards: ", total_rewards/len(episode_rewards))
 
         return episode_rewards, self.policy
