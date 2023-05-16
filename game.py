@@ -10,6 +10,7 @@ class Game:
         self.scores = [0, 0]
         self.rounds = 0
         self.action_space = list(range(101))
+        self.continuous_draw = 0
         return self.get_state()
 
     def step(self, actions):
@@ -19,7 +20,8 @@ class Game:
         elif actions[1] > actions[0]:
             winner = 1
         else:  # draw
-            if self.points[0]==0:
+            self.continuous_draw+=1
+            if self.points[0]==0 or self.continuous_draw==5:
                 if self.scores[0] == self.scores[1]:
                     return self.get_state(), 0, True, 2
                 else:
@@ -27,6 +29,7 @@ class Game:
                     reward = self.scores[0]-self.scores[1]
                     return self.get_state(), reward, True, winner
             return self.get_state(), 0, False, winner
+        self.continuous_draw = 0
         self.points[0] -= actions[0]
         self.points[1] -= actions[1]
         self.scores[winner] += 1
