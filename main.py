@@ -1,6 +1,8 @@
 from game import Game
 from agent import QLearningAgent
 from numpy import nper
+from utils import plot_reward
+import pickle
 
 def main():
     params = {
@@ -15,7 +17,10 @@ def main():
 
     game = Game()
     agent = QLearningAgent(game, params)
-    agent.run(1000000, True)
+    episode_reward, policy = agent.run(1000000, True)
+    with open('model.pickle', 'wb') as f:
+        pickle.dump(policy, f, protocol=pickle.HIGHEST_PROTOCOL)
+    plot_reward(episode_reward)
     eval_rs = agent.run(10, False)
 
 if __name__ == "__main__":

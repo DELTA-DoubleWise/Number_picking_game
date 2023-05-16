@@ -2,6 +2,7 @@ import numpy as np
 from game import Game
 from typing import Dict, Any, Tuple, Callable
 import numpy.typing as npt
+import simple_agent
 
 class QLearningAgent():
     def __init__(self, env, params: Dict[str, Any]):
@@ -54,7 +55,7 @@ class QLearningAgent():
 
     def run(self, max_episodes: int, train: bool):
         # YOUR CODE HERE
-        episode_rewards = dict()
+        episode_rewards = []
         total_rewards = 0
 
         for ne in range(max_episodes):
@@ -63,12 +64,16 @@ class QLearningAgent():
             total_reward = 0
             winner = -1
             while not done:
-                # print(state)
                 if not train:
                     print(state)
                 action = self.get_action(state, train)
                 if train:
-                    next_state, reward, done, winner = self.step([action, np.random.choice(self.env.points[1]+1)])
+                    if np.random.random()<0.2:
+                        op_action = np.random.randint(self.env.points[1]+1)
+                    else:
+                        op_action = simple_agent.game(self.env,1)
+                    # print("op_action: ",op_action)
+                    next_state, reward, done, winner = self.step([action, op_action])
                 else:
                     op_action = int(input("Please enter your choice: "))
                     next_state, reward, done, winner = self.step([action, op_action])
@@ -92,7 +97,7 @@ class QLearningAgent():
                     elif winner == 2:
                         print("Draw")
 
-            episode_rewards[ne] = total_reward
+            episode_rewards.append(total_reward)
             total_rewards += total_reward
             print(f"episode {ne}: {total_reward}")
 
@@ -100,4 +105,4 @@ class QLearningAgent():
             self.lr = max(self.lr*self.lr_decay, self.min_lr)
         print("total rewards: ", total_rewards)
 
-        return episode_rewards
+        return episode_rewards, self.policy
