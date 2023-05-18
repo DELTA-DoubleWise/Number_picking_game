@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-def plot_reward(episode_rewards):
+def plot_reward(episode_rewards, fname = "training_reward.png"):
     total_episode = len(episode_rewards)
     index = 1000*(np.arange(total_episode/1000)+1)
     mean_episode = []
@@ -12,5 +12,5 @@ def plot_reward(episode_rewards):
     plt.ylabel("reward")
     plt.xlabel("episode")
     plt.title("training reward")
-    plt.savefig("training_reward.png")
+    plt.savefig(fname)
     plt.show()
