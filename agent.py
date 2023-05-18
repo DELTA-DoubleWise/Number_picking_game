@@ -3,6 +3,9 @@ from game import Game
 from typing import Dict, Any, Tuple, Callable
 import numpy.typing as npt
 import simple_agent
+from heapq import nlargest
+import math
+from random import choices
 
 class QLearningAgent():
     def __init__(self, env, params: Dict[str, Any], policy=None):
@@ -30,15 +33,18 @@ class QLearningAgent():
             if np.random.random_sample()<self.eps:
                 return np.random.choice(list(self.policy[state].keys()))
 
-        max_Q = -float(np.inf)
-        action = 0
-        if max(self.policy[state].values()) == min(self.policy[state].values()):
-            action = np.random.choice(list(self.policy[state].keys()))
+            # max_Q = -float(np.inf)
+            # action = 0
+            # if max(self.policy[state].values()) == min(self.policy[state].values()):
+            #     action = np.random.choice(list(self.policy[state].keys()))
+            # else:
+            #     for i in range(self.env.points[0]):
+            #         if self.policy[state][i] > max_Q:
+            #             max_Q = self.policy[state][i]
+            #             action = i
+            action = pick_action(self.policy[state])
         else:
-            for i in range(self.env.points[0]):
-                if self.policy[state][i] > max_Q:
-                    max_Q = self.policy[state][i]
-                    action = i
+            action = pick_action(self.policy[state])
         return action
 
     def step(self, actions: list) -> Tuple[npt.NDArray, float, bool, int]:
@@ -55,7 +61,7 @@ class QLearningAgent():
         self.policy[state][action] = td*self.lr + self.policy[state][action]
         return td
 
-    def run(self, max_episodes: int, train: bool):
+    def run(self, max_episodes: int, train: bool, eval_method = "auto", eval_agent = None):
         # YOUR CODE HERE
         episode_rewards = []
         total_rewards = 0
@@ -65,9 +71,9 @@ class QLearningAgent():
             done = False
             total_reward = 0
             winner = -1
+            if not train:
+                print(state)
             while not done:
-                if not train:
-                    print(state)
                 action = self.get_action(state, train)
                 if train:
                     if np.random.random()<0.15:
@@ -77,8 +83,12 @@ class QLearningAgent():
                     # print("op_action: ",op_action)
                     next_state, reward, done, winner = self.step([action, op_action])
                 else:
-                    op_action = int(input("Please enter your choice: "))
-                    # op_action = simple_agent.game(self.env, 1)
+                    if eval_method == "manual":
+                        op_action = int(input("Please enter your choice: "))
+                    elif eval_method == "auto":
+                        op_action = simple_agent.game(self.env, 1)
+                    elif eval_method == "model":
+                        op_action = eval_agent.get_action((state[1],state[0],state[3],state[2]), False)
                     next_state, reward, done, winner = self.step([action, op_action])
                 # print(f"({action},{op_action})")
 
@@ -101,6 +111,9 @@ class QLearningAgent():
                     elif winner == 2:
                         print("Draw")
 
+                if not train:
+                    print(state)
+
             episode_rewards.append(total_reward)
             total_rewards += total_reward
             if ne%1000==0:
@@ -111,3 +124,24 @@ class QLearningAgent():
         print("average rewards: ", total_rewards/len(episode_rewards))
 
         return episode_rewards, self.policy
+
+def pick_action(policy):
+    top_action = dict(sorted(policy.items(), key=lambda x: x[1], reverse=True)[:min(10,len(policy))])
+
+    exp_top_action = {}
+    for key in top_action.keys():
+        exp_top_action[key] = math.exp(top_action[key])
+
+    sumV = sum(exp_top_action.values())
+    possible_actions = []
+    prob = []
+    for key in exp_top_action.keys():
+        exp_top_action[key] = exp_top_action[key]/sumV
+        possible_actions.append(key)
+        prob.append(exp_top_action[key])
+
+    action = choices(possible_actions,prob)[0]
+
+    return action
+
+

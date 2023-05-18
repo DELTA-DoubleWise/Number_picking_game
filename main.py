@@ -1,5 +1,5 @@
 from game import Game
-from agent import QLearningAgent
+from agent import QLearningAgent, pick_action
 from numpy import nper
 from utils import plot_reward
 import pickle
@@ -18,13 +18,16 @@ def main():
     game = Game()
     # agent = QLearningAgent(game, params)
     # episode_reward, policy = agent.run(5000000, True)
-    # with open('model.pickle', 'wb') as f:
+    # with open('model_10choice.pickle', 'wb') as f:
     #     pickle.dump(policy, f, protocol=pickle.HIGHEST_PROTOCOL)
-    # plot_reward(episode_reward)
+    # plot_reward(episode_reward, "training_reward_10choice.png")
+    with open('model_10choice.pickle', 'rb') as f:
+        policy_1 = pickle.load(f)
     with open('model.pickle', 'rb') as f:
-        policy = pickle.load(f)
-    agent = QLearningAgent(game,params,policy)
-    eval_rs = agent.run(10, False)
+        policy_2 = pickle.load(f)
+    eval_agent = QLearningAgent(game,params,policy_2)
+    agent = QLearningAgent(game,params,policy_1)
+    eval_rs = agent.run(1000, False, "model", eval_agent)
 
 if __name__ == "__main__":
     main()
