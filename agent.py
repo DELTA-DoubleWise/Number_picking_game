@@ -23,6 +23,9 @@ class QLearningAgent():
         self.eps_decay = self.params["epsilon_decay"]
         self.min_eps = self.params["min_epsilon"]
 
+    def set_env(self, env):
+        self.env = env
+
     def get_action(self, state: npt.NDArray, train: bool) -> int:
         """Return an action given the current state"""
         # YOUR CODE HERE
@@ -139,6 +142,8 @@ def pick_action(policy):
         exp_top_action[key] = exp_top_action[key]/sumV
         possible_actions.append(key)
         prob.append(exp_top_action[key])
+    # print(possible_actions)
+    # print(prob)
 
     action = choices(possible_actions,prob)[0]
 
